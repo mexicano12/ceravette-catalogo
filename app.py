@@ -5,6 +5,10 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from functools import wraps
 from dotenv import load_dotenv # Importa esto
+import psycopg2
+import psycopg2.extras # <--- Asegúrate de importar esto
+
+
 app = Flask(__name__)
 # Carga las variables del archivo .env
 load_dotenv()
@@ -15,15 +19,10 @@ DATABASE_URL = os.environ.get('DATABASE_URL')
 app.secret_key = 'pedesinterra' 
 
 def get_db_connection():
-    # 1. Obtenemos la URL desde las variables de entorno
-    url = os.environ.get('DATABASE_URL')
-    
-    # 2. Validación preventiva (por si olvidaste poner la variable en Render)
-    if not url:
-        raise Exception("¡Error! La variable DATABASE_URL no está configurada en Render.")
-    
-    # 3. Conexión segura
-    conn = psycopg2.connect(url, sslmode='require')
+    # Nos conectamos
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    # ESTA LÍNEA ES LA CLAVE: le dice a psycopg2 que devuelva los datos como diccionarios
+    conn.cursor_factory = psycopg2.extras.DictCursor
     return conn
 
 def init_db():
