@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Desk - CeraVette</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-stone-100 text-stone-800 font-sans antialiased p-6">
+
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        
+
+<main class="lg:col-span-4 bg-white rounded-2xl border border-stone-200 shadow-xl overflow-hidden self-start">        
+        <div class="bg-stone-900 px-6 py-4 flex justify-between items-center text-white">
+            <div>
+                <h1 class="text-xl font-bold flex items-center gap-2">
+                    <i data-lucide="sliders-horizontal" class="text-amber-500 w-5 h-5"></i> Control Desk
+                     <div class="flex gap-2">
+                    <a href="/" class="text-xs border border-stone-700 hover:bg-stone-800 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
+                        <i data-lucide="eye" class="w-3.5 h-3.5"></i> Ver Catálogo
+                    </a>
+                    <a href="/logout" class="text-xs bg-red-900/50 border border-red-700 hover:bg-red-800 text-red-100 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
+                        <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Salir
+                    </a>
+                </div>
+                </h1>
+               
+            </div>
+        </div>
+<form id="productForm" action="/admin/nuevo" method="POST" enctype="multipart/form-data" class="p-6 space-y-4">    
+    <div class="p-4 bg-stone-50 rounded-xl border border-stone-200">
+        <label class="block text-xs font-mono uppercase tracking-wider text-stone-500 mb-2">Foto del Molde de Referencia</label>
+        <input type="file" name="foto_molde" id="foto_molde" accept="image/*" required class="block w-full text-sm text-stone-500">
+        <div id="previewContainer" class="mt-3 hidden">
+            <img id="imgPreview" src="#" class="h-32 w-auto rounded-lg border border-stone-200 shadow-sm">
+        </div>
+    </div>
+
+    <div>
+        <label class="block text-xs font-mono uppercase tracking-wider text-stone-500 mb-1">Código Único (SKU)</label>
+        <input type="text" name="codigo" placeholder="Ej: VEL-VIR-01" required class="w-full px-3 py-2 border rounded-lg text-sm font-mono">
+    </div>
+
+    <div>
+        <label class="block text-xs font-mono uppercase tracking-wider text-stone-500 mb-1">Categoría</label>
+        <select name="categoria" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white">
+            {% for cat in categorias %}
+                <option value="{{ cat.id }}">{{ cat.nombre }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label class="block text-xs font-mono uppercase tracking-wider text-stone-500 mb-1">Nombre Comercial</label>
+        <input type="text" name="nombre" placeholder="Ej: Vela Virgen de Guadalupe Animada" required class="w-full px-3 py-2 border rounded-lg text-sm">
+    </div>
+
+    <div>
+        <label class="block text-xs font-mono uppercase tracking-wider text-stone-500 mb-1">Precio ($ MXN)</label>
+        <input type="number" step="0.01" name="precio" placeholder="0.00" required class="w-full px-3 py-2 border rounded-lg text-sm">
+    </div>
+
+    <div class="mb-4">
+        <label class="block text-sm font-bold text-stone-700 mb-1">Descripción del Producto</label>
+        <textarea name="descripcion" 
+                placeholder="Escribe la descripción comercial, beneficios o detalles del producto..." 
+                required 
+                class="w-full p-3 border border-stone-200 rounded-xl h-24 focus:ring-2 focus:ring-amber-500 outline-none text-sm"></textarea>
+    </div>
+
+    <button type="submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-medium py-2.5 rounded-lg text-sm transition-all shadow-md flex items-center justify-center gap-2">
+        <i data-lucide="plus-circle" class="w-4 h-4"></i> Registrar e Inyectar Producto
+    </button>
+</form>
+
+    </main>
+
+        <section class="lg:col-span-8 bg-white rounded-2xl border border-stone-200 shadow-sm p-6 self-start">
+            <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                <i data-lucide="database" class="w-5 h-5"></i> Inventario Actual
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-stone-50 border-b">
+                        <tr>
+                            <th class="p-3">Código</th>
+                            <th class="p-3">Nombre</th>
+                            <th class="p-3">Precio</th>
+                            <th class="p-3 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in productos %}
+                        <tr class="border-b hover:bg-stone-50">
+                            <td class="p-3 font-mono text-stone-500">{{ p['codigo'] }}</td>
+                            <td class="p-3 font-medium">{{ p['nombre'] }}</td>
+                            <td class="p-3">${{ "%.2f"|format(p['precio']) }}</td>
+                            <td class="p-3 flex justify-center gap-3">
+                                <a href="/admin/editar/{{ p['id'] }}" class="text-blue-600 hover:underline">Editar</a>
+                                <a href="/admin/eliminar/{{ p['id'] }}" onclick="return confirm('¿Eliminar?')" class="text-red-600 hover:underline">Eliminar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Manejo de previsualización
+        document.getElementById('foto_molde').onchange = evt => {
+            const [file] = evt.target.files;
+            if (file) {
+                document.getElementById('previewContainer').classList.remove('hidden');
+                document.getElementById('imgPreview').src = URL.createObjectURL(file);
+            }
+        };
+
+       
+    </script>
+</body>
+</html>
+
+

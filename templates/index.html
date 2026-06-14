@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CeraVette - Catálogo Artesanal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+</head>
+<body class="bg-stone-50 text-stone-800 antialiased font-sans">
+
+    <nav class="bg-white border-b border-stone-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center">
+                <img src="{{ url_for('static', filename='img/logo1.png') }}" alt="CeraVette" class="h-24 w-auto failover-logo" ...>
+                <span id="logo-text" class="text-xl font-serif tracking-widest text-stone-900 font-bold hidden">CERAVETTE</span>
+            </div>
+
+            <div class="flex items-center gap-4 flex-1 max-w-md justify-end">
+                <div class="relative w-full hidden sm:block">
+                    <input type="text" placeholder="Buscar por código o nombre..." class="w-full pl-10 pr-4 py-2 bg-stone-100 border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-stone-400">
+                    <i data-lucide="search" class="absolute left-3 top-2.5 w-4 h-4 text-stone-400"></i>
+                </div>
+                
+                <button onclick="toggleCartModal()" class="relative p-2.5 bg-stone-900 text-white hover:bg-stone-800 rounded-xl transition-all shadow-sm flex items-center gap-2">
+                    <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                    <span id="cart-count" class="bg-amber-500 text-stone-900 text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 group h-48 sm:h-64 md:h-80 overflow-hidden rounded-3xl shadow-md">
+    
+    <div id="promo-slider" class="flex w-full h-full transition-transform duration-700 ease-out">
+        
+        <div class="w-full h-full shrink-0 relative">
+            <div class="absolute inset-0 bg-linear-to-r from-stone-900/70 to-transparent z-10"></div>
+                <img src="{{ url_for('static', filename='img/1.png') }}" class="w-full h-full object-cover" alt="Kits Premium">            <div class="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 z-20 text-white max-w-md">
+                <span class="bg-amber-500 text-stone-900 text-xs font-bold px-3 py-1 rounded-md uppercase tracking-wider">Lanzamiento</span>
+                <h2 class="text-xl sm:text-3xl font-serif font-bold mt-2 tracking-wide">Colección Mística 2026</h2>
+                <p class="text-xs sm:text-sm text-stone-200 mt-1">Lleva la armonía artesanal a tu espacio con esencias premium naturales.</p>
+            </div>
+        </div>
+
+        <div class="w-full h-full shrink-0 relative">
+            <div class="absolute inset-0 bg-linear-to-r from-emerald-950/70 to-transparent z-10"></div>
+           <img src="{{ url_for('static', filename='img/2.png') }}" class="w-full h-full object-cover" alt="Promociones">
+            <div class="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 z-20 text-white max-w-md">
+                <span class="bg-emerald-400 text-stone-900 text-xs font-bold px-3 py-1 rounded-md uppercase tracking-wider">Miztli Pack</span>
+                <h2 class="text-xl sm:text-3xl font-serif font-bold mt-2 tracking-wide">20% de Descuento en Jabones</h2>
+                <p class="text-xs sm:text-sm text-stone-200 mt-1">Base orgánica con hojuelas de avena y miel para el cuidado de tu piel.</p>
+            </div>
+        </div>
+
+        <div class="w-full h-full shrink-0 relative">
+            <div class="absolute inset-0 bg-linear-to-r from-amber-950/70 to-transparent z-10"></div>
+            <img src="{{ url_for('static', filename='img/3.png') }}" class="w-full h-full object-cover" alt="Insumos">
+            <div class="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 z-20 text-white max-w-md">
+                <span class="bg-stone-100 text-stone-900 text-xs font-bold px-3 py-1 rounded-md uppercase tracking-wider">Envíos</span>
+                <h2 class="text-xl sm:text-3xl font-serif font-bold mt-2 tracking-wide">Entregas Locales Sin Costo</h2>
+                <p class="text-xs sm:text-sm text-stone-200 mt-1">Arma tu carrito por WhatsApp y coordinamos tu entrega de forma segura.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <button onclick="movePromo(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/30 hover:bg-white text-white hover:text-stone-900 p-2 rounded-full backdrop-blur-xs z-30 opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-xs">
+        <i data-lucide="chevron-left" class="w-6 h-6"></i>
+    </button>
+    <button onclick="movePromo(1)" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/30 hover:bg-white text-white hover:text-stone-900 p-2 rounded-full backdrop-blur-xs z-30 opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-xs">
+        <i data-lucide="chevron-right" class="w-6 h-6"></i>
+    </button>
+
+    <div class="absolute bottom-4 right-6 z-30 flex gap-2">
+        <span class="promo-dot w-2 h-2 rounded-full bg-white transition-all duration-300" onclick="goToPromo(0)"></span>
+        <span class="promo-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300" onclick="goToPromo(1)"></span>
+        <span class="promo-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300" onclick="goToPromo(2)"></span>
+    </div>
+</div>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-6 relative group">
+    
+    <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-mono uppercase tracking-wider text-stone-500 font-bold">Categorías:</span>
+    </div>
+
+    <div class="relative flex items-center">
+        
+        <button onclick="scrollCategories(-200)" 
+                class="absolute left-0 bg-white/90 hover:bg-white text-stone-800 border border-stone-200 p-2 rounded-full shadow-md z-10 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 -ml-4 hover:scale-105">
+            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+
+        <div id="categories-track" 
+             class="flex items-center gap-3 overflow-x-auto scroll-smooth w-full py-2 px-1 snap-x no-scrollbar"
+             style="scrollbar-width: none; -ms-overflow-style: none;">
+            
+           <div id="categories-track" 
+     class="flex items-center gap-3 overflow-x-auto scroll-smooth w-full py-2 px-1 snap-x no-scrollbar"
+     style="scrollbar-width: none; -ms-overflow-style: none;">
+    
+    <a href="/" class="snap-start shrink-0 px-5 py-2 {{ 'bg-amber-600 text-white' if not categoria_activa else 'bg-white border border-stone-200 text-stone-600' }} rounded-full text-sm font-medium transition-colors whitespace-nowrap">
+        Todos
+    </a>
+    
+    {% for cat in categorias %}
+    <a href="/?categoria={{ cat.id }}" 
+    class="snap-start shrink-0 px-5 py-2 rounded-full 
+    {{ 'bg-amber-600 text-white' if categoria_activa == cat.id else 'bg-white border' }}">
+        {{ cat.nombre }}
+    </a>
+    {% endfor %}
+</div>
+        </div>
+
+        <button onclick="scrollCategories(200)" 
+                class="absolute right-0 bg-white/90 hover:bg-white text-stone-800 border border-stone-200 p-2 rounded-full shadow-md z-10 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 -mr-4 hover:scale-105">
+            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+        </button>
+
+    </div>
+</div>
+
+<style>
+    /* Ocultar barra de scroll para Chrome, Safari y Opera */
+    #categories-track::-webkit-scrollbar {
+        display: none;
+    }
+</style>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    {% for producto in productos %}
+    <div onclick="openProductModal('{{ producto.codigo }}', '{{ producto.nombre }}', {{ producto.precio }}, '{{ producto.imagen }}', '{{ producto.descripcion }}')" 
+         class="cursor-pointer bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden flex flex-col group hover:shadow-md transition-shadow relative">
+        
+        <span class="absolute top-3 left-3 bg-stone-900/80 backdrop-blur-xs text-white font-mono text-[10px] px-2 py-1 rounded-md tracking-wider z-10">
+            {{ producto.codigo }}   
+        </span>
+
+        <div class="aspect-square w-full bg-stone-100 relative overflow-hidden">
+            <img src="{{ producto.imagen }}" alt="{{ producto.nombre }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+        </div>
+
+        <div class="p-4 flex flex-col flex-1 justify-between space-y-4">
+            <div>
+                <h3 class="font-medium text-stone-900 text-base line-clamp-1">{{ producto.nombre }}</h3>
+                <p class="text-xs text-stone-500 mt-1 line-clamp-2">{{ producto.descripcion }}</p>
+            </div>
+
+            <div class="pt-2 flex items-center justify-between border-t border-stone-100">
+                <span class="text-lg font-bold text-stone-900">${{ "%.2f"|format(producto.precio) }}</span>
+                
+                <button onclick="event.stopPropagation(); addToCart('{{ producto.codigo }}', '{{ producto.nombre }}', {{ producto.precio }}, '{{ producto.imagen }}')" 
+                        class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-xl transition-colors flex items-center gap-1.5 shadow-xs">
+                    <i data-lucide="shopping-basket" class="w-4 h-4"></i> Añadir
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+    </main>
+
+    <div id="cart-modal" class="fixed inset-0 bg-stone-900/50 backdrop-blur-xs z-50 flex justify-end hidden opacity-0 transition-opacity duration-300">
+        <div class="w-full max-w-md bg-white h-full shadow-2xl flex flex-col justify-between p-6 animate-slide-in">
+            <div>
+                <div class="flex items-center justify-between border-b border-stone-200 pb-4">
+                    <h2 class="text-lg font-bold text-stone-900 flex items-center gap-2">
+                        <i data-lucide="shopping-bag" class="text-amber-600"></i> Tu Bolsa de Compras
+                    </h2>
+                    <button onclick="toggleCartModal()" class="text-stone-400 hover:text-stone-600 p-1"><i data-lucide="x" class="w-6 h-6"></i></button>
+                </div>
+                <div id="cart-items-container" class="mt-4 overflow-y-auto max-h-[60vh] space-y-4 divide-y divide-stone-100">
+                    </div>
+            </div>
+
+            <div class="border-t border-stone-200 pt-4 space-y-4">
+                <div class="flex justify-between items-center text-stone-900 font-bold text-lg">
+                    <span>Total estimado:</span>
+                    <span id="cart-total">$0.00</span>
+                </div>
+                <button onclick="sendOrderWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
+                    <i data-lucide="phone" class="w-4 h-4"></i> Confirmar pedido por WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Inicializar carrito desde memoria del navegador (LocalStorage)
+        let cart = JSON.parse(localStorage.getItem('ceravette_cart')) || [];
+
+        function updateCartUI() {
+    localStorage.setItem('ceravette_cart', JSON.stringify(cart));
+    
+    // 1. Actualizar el número del badge en el nav
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.getElementById('cart-count').innerText = totalItems;
+
+    // 2. Renderizar items en el modal
+    const container = document.getElementById('cart-items-container');
+    container.innerHTML = '';
+    
+    if (cart.length === 0) {
+        container.innerHTML = `<p class="text-center text-sm text-stone-400 py-8 font-mono">El carrito está vacío</p>`;
+        document.getElementById('cart-total').innerText = '$0.00';
+        return;
+    }
+
+    let total = 0;
+    cart.forEach(item => {
+        total += item.precio * item.quantity;
+        container.innerHTML += `
+            <div class="flex items-center gap-4 pt-3">
+                <img src="${item.imagen}" class="w-12 h-12 object-cover rounded-lg border border-stone-200">
+                <div class="flex-1">
+                    <h4 class="text-sm font-medium text-stone-900 line-clamp-1">${item.nombre}</h4>
+                    
+                    <div class="flex items-center gap-3 mt-2">
+                        <button onclick="changeQuantity('${item.codigo}', -1)" class="w-6 h-6 flex items-center justify-center bg-stone-100 hover:bg-stone-200 rounded-full transition-colors text-stone-600">-</button>
+                        <span class="text-xs font-mono font-bold w-4 text-center">${item.quantity}</span>
+                        <button onclick="changeQuantity('${item.codigo}', 1)" class="w-6 h-6 flex items-center justify-center bg-stone-100 hover:bg-stone-200 rounded-full transition-colors text-stone-600">+</button>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="text-sm font-bold text-stone-900">$${(item.precio * item.quantity).toFixed(2)}</span>
+                    <button onclick="removeFromCart('${item.codigo}')" class="block text-[11px] text-red-500 hover:underline mt-0.5 ml-auto">Quitar</button>
+                </div>
+            </div>
+        `;
+    });
+    document.getElementById('cart-total').innerText = `$${total.toFixed(2)}`;
+    lucide.createIcons();
+}
+
+// NUEVA FUNCIÓN PARA CAMBIAR CANTIDAD
+function changeQuantity(codigo, delta) {
+    const item = cart.find(i => i.codigo === codigo);
+    if (item) {
+        item.quantity += delta;
+        // Si la cantidad llega a 0, lo eliminamos
+        if (item.quantity <= 0) {
+            removeFromCart(codigo);
+        } else {
+            updateCartUI(); // Volvemos a dibujar el carrito con los nuevos totales
+        }
+    }
+}
+        function addToCart(codigo, nombre, precio, imagen) {
+            const existingItem = cart.find(item => item.codigo === codigo);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ codigo, nombre, precio, imagen, quantity: 1 });
+            }
+            updateCartUI();
+            
+            // Animación flash al botón del nav para dar feedback visual
+            const btn = document.getElementById('cart-count').parentElement;
+            btn.classList.add('scale-110', 'bg-amber-600');
+            setTimeout(() => btn.classList.remove('scale-110', 'bg-amber-600'), 200);
+        }
+
+        function removeFromCart(codigo) {
+            cart = cart.filter(item => item.codigo !== codigo);
+            updateCartUI();
+        }
+
+        function toggleCartModal() {
+            const modal = document.getElementById('cart-modal');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                setTimeout(() => modal.classList.remove('opacity-0'), 10);
+            } else {
+                modal.classList.add('opacity-0');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            }
+        }
+
+        function sendOrderWhatsApp() {
+            if (cart.length === 0) return alert('Tu carrito está vacío.');
+            
+            let message = "¡Hola CeraVette! Me interesa realizar el siguiente pedido:\n\n";
+            let total = 0;
+            
+            cart.forEach(item => {
+                message += `▪️ *${item.nombre}* (${item.codigo})\n   Cant: ${item.quantity} x $${item.precio.toFixed(2)} = *$${(item.precio * item.quantity).toFixed(2)}*\n`;
+                total += item.precio * item.quantity;
+            });
+            
+            message += `\n💰 *Total Estimado: $${total.toFixed(2)}*\n\n¿Tienen disponibilidad para coordinar la entrega?`;
+            
+            const encodedText = encodeURIComponent(message);
+            // Reemplaza con tu número de WhatsApp real (código de país + número, sin espacios ni signos +)
+            const whatsappUrl = `https://wa.me/525631305014?text=${encodedText}`;
+            window.open(whatsappUrl, '_blank');
+        }
+// --- LOGICA DEL CARRUSEL DE PROMOCIONES ---
+let currentPromoIndex = 0;
+const totalPromos = 3; // Número de imágenes/slides que pusimos arriba
+const promoSlider = document.getElementById('promo-slider');
+const promoDots = document.querySelectorAll('.promo-dot');
+
+function updatePromoUI() {
+    // Desplaza horizontalmente el riel según el slide activo (0%, -100%, -200%)
+    promoSlider.style.transform = `translateX(-${currentPromoIndex * 100}%)`;
+    
+    // Actualiza la opacidad de los puntitos de navegación
+    promoDots.forEach((dot, idx) => {
+        if (idx === currentPromoIndex) {
+            dot.classList.remove('bg-white/50', 'w-2');
+            dot.classList.add('bg-white', 'w-5'); // El punto activo se vuelve más largo
+        } else {
+            dot.classList.remove('bg-white', 'w-5');
+            dot.classList.add('bg-white/50', 'w-2');
+        }
+    });
+}
+
+function movePromo(direction) {
+    currentPromoIndex += direction;
+    if (currentPromoIndex >= totalPromos) currentPromoIndex = 0;
+    if (currentPromoIndex < 0) currentPromoIndex = totalPromos - 1;
+    updatePromoUI();
+}
+
+function goToPromo(index) {
+    currentPromoIndex = index;
+    updatePromoUI();
+}
+
+// Auto-reproducción automática: Cambia cada 5 segundos
+let promoInterval = setInterval(() => movePromo(1), 5000);
+
+// Detener el auto-cambio si el usuario interactúa manualmente con los botones
+document.querySelector('#promo-slider').parentElement.addEventListener('mouseenter', () => {
+    clearInterval(promoInterval);
+});
+document.querySelector('#promo-slider').parentElement.addEventListener('mouseleave', () => {
+    promoInterval = setInterval(() => movePromo(1), 5000);
+});
+
+// Inicializar estado visual del primer punto
+document.addEventListener('DOMContentLoaded', () => {
+    updatePromoUI();
+});
+        // Cargar UI inicial de memoria
+        document.addEventListener('DOMContentLoaded', updateCartUI);
+    </script>
+    <div id="product-modal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative animate-in fade-in zoom-in duration-300">
+        <button onclick="closeProductModal()" class="absolute top-4 right-4 z-10 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg">
+            <i data-lucide="x"></i>
+        </button>
+        
+        <div class="w-full md:w-1/2 h-64 md:h-auto bg-stone-100">
+            <img id="modal-img" src="" alt="Producto" class="w-full h-full object-cover">
+        </div>
+        
+        <div class="p-8 w-full md:w-1/2 flex flex-col justify-between">
+            <div>
+                <span id="modal-code" class="text-xs font-mono text-stone-400 uppercase"></span>
+                <h2 id="modal-name" class="text-2xl font-serif font-bold text-stone-900 mt-1"></h2>
+                <p id="modal-desc" class="text-stone-600 mt-4 text-sm leading-relaxed"></p>
+            </div>
+            <div class="mt-8 flex items-center justify-between">
+                <span id="modal-price" class="text-xl font-bold text-stone-900"></span>
+                <button id="modal-add-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transition-all">
+                    <i data-lucide="shopping-basket" class="w-5 h-5"></i> Añadir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openProductModal(codigo, nombre, precio, imagen, desc) {
+        document.getElementById('modal-img').src = imagen;
+        document.getElementById('modal-name').innerText = nombre;
+        document.getElementById('modal-code').innerText = codigo;
+        document.getElementById('modal-desc').innerText = desc;
+        document.getElementById('modal-price').innerText = '$' + precio.toFixed(2);
+        
+        const btn = document.getElementById('modal-add-btn');
+        btn.onclick = () => {
+            addToCart(codigo, nombre, precio, imagen);
+            closeProductModal();
+        };
+
+        document.getElementById('product-modal').classList.remove('hidden');
+        lucide.createIcons(); // Refrescar los iconos para que se vean
+    }
+
+    function closeProductModal() {
+        document.getElementById('product-modal').classList.add('hidden');
+    }
+</script>
+ <a href="https://wa.me/5215631305014?text=Hola,%20me%20interesa%20un%20producto%20de%20CeraVette" 
+    target="_blank"
+    class="fixed bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-all z-50 flex items-center justify-center animate-bounce">
+    <i data-lucide="message-circle" class="w-6 h-6"></i>
+    </a>
+</body>
+</html>
