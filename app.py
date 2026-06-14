@@ -145,13 +145,21 @@ def crear_producto():
 @login_required
 def editar_producto(id):
     conn = get_db_connection()
+    cur = conn.cursor() # ¡Necesitas crear el cursor!
+    
     if request.method == 'POST':
-        conn.execute("UPDATE productos SET nombre=?, precio=?, descripcion=?, categoria=? WHERE id=?", 
+        # Nota el uso de %s y que ahora es cur.execute
+        cur.execute("""UPDATE productos SET nombre=%s, precio=%s, descripcion=%s, categoria=%s 
+                       WHERE id=%s""", 
                      (request.form['nombre'], request.form['precio'], request.form['descripcion'], request.form['categoria'], id))
         conn.commit()
+        cur.close()
         conn.close()
         return redirect(url_for('admin'))
-    producto = conn.execute("SELECT * FROM productos WHERE id = ?", (id,)).fetchone()
+    
+    cur.execute("SELECT * FROM productos WHERE id = %s", (id,))
+    producto = cur.fetchone()
+    cur.close()
     conn.close()
     return render_template('editar.html', producto=producto)
 
@@ -159,11 +167,12 @@ def editar_producto(id):
 @login_required
 def eliminar_producto(id):
     conn = get_db_connection()
-    conn.execute('DELETE FROM productos WHERE id = ?', (id,))
+    cur = conn.cursor() # ¡Necesitas crear el cursor!
+    cur.execute('DELETE FROM productos WHERE id = %s', (id,))
     conn.commit()
+    cur.close()
     conn.close()
     return redirect(url_for('admin'))
-
 if __name__ == '__main__':
     # 1. Aseguramos que la base de datos se cree al arrancar
     init_db()
