@@ -15,8 +15,15 @@ DATABASE_URL = os.environ.get('DATABASE_URL')
 app.secret_key = 'pedesinterra' 
 
 def get_db_connection():
-    # Nos conectamos a la base de datos remota
-    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    # 1. Obtenemos la URL desde las variables de entorno
+    url = os.environ.get('DATABASE_URL')
+    
+    # 2. Validación preventiva (por si olvidaste poner la variable en Render)
+    if not url:
+        raise Exception("¡Error! La variable DATABASE_URL no está configurada en Render.")
+    
+    # 3. Conexión segura
+    conn = psycopg2.connect(url, sslmode='require')
     return conn
 
 def init_db():
