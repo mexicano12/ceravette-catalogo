@@ -7,12 +7,16 @@ from functools import wraps
 from dotenv import load_dotenv # Importa esto
 import psycopg2
 import psycopg2.extras # <--- Asegúrate de importar esto
-
-
+import cloudinary
+import cloudinary.uploader
 app = Flask(__name__)
 # Carga las variables del archivo .env
 load_dotenv()
-
+cloudinary.config(
+  cloud_name = 'dunxeko3e', # Este es el que aparece en tu imagen
+  api_key = '757512597471735',
+  api_secret = 'LLqqAt4dXh28JgfgE4S_fgqt4ks' # <--- ESTO LO OBTIENES EN TU DASHBOARD DE CLOUDINARY
+)
 
 # --- CONFIGURACIÓN DE BASE DE DATOS (NEON / POSTGRESQL) ---
 DATABASE_URL = os.environ.get('DATABASE_URL')
@@ -127,11 +131,12 @@ def crear_producto():
 
         archivo = request.files.get('foto_molde')
         imagen_db = None
+        
         if archivo:
-            nombre_limpio = secure_filename(f"{codigo}.png")
-            ruta_molde = os.path.join('static/productos', nombre_limpio)
-            archivo.save(ruta_molde)
-            imagen_db = f"/static/productos/{nombre_limpio}"
+            # Sube la imagen a Cloudinary en lugar de guardarla localmente
+            upload_result = cloudinary.uploader.upload(archivo)
+            # Obtenemos la URL segura que nos da Cloudinary
+            imagen_db = upload_result.get('secure_url')
 
         conn = get_db_connection()
         cur = conn.cursor()
@@ -185,7 +190,7 @@ if __name__ == '__main__':
     
     # 2. Render nos da un puerto a través de una variable de entorno. 
     # Si no existe (como en tu PC), usamos el 5000 por defecto.
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 5001))
     
     # 3. Quitamos el debug=True para producción y configuramos el host
     app.run(host='0.0.0.0', port=port, debug=False)
